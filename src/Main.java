@@ -1,41 +1,59 @@
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
-        StudyGroup group = new StudyGroup();
-        StudyGroupService studyGroupService = new StudyGroupService(group);
-
-        studyGroupService.addStudent("Ваня");
-        studyGroupService.addStudent("Петя");
-        studyGroupService.addStudent("Вася");
-        studyGroupService.addStudent("Маша");
-
-//        List<String> list = new ArrayList<>();
-//
-//        Iterator<String> iterator = list.iterator();
-//        while (iterator.hasNext()){
-//            String s = iterator.next();
-//            System.out.println(s);
-//        }
-
-
-        for (Student student: group){
-            System.out.println(student);
+    public static void main(String[] args) throws FileNotFoundException, IOException {
+        FileHandler fileHandler = new FileHandler();
+        GenealogicalTree bigFamily = new GenealogicalTree(fileHandler);
+        GenTreeService genTreeService = new GenTreeService(bigFamily);
+        genTreeService.addHuman("Федор", Sex.Man, 1947);
+        genTreeService.addHuman("Анна", Sex.Woman, 1949);
+        genTreeService.addHuman("Александр", Sex.Man, 1999);
+        genTreeService.addHuman("Мария", Sex.Man, 2003);
+        genTreeService.addHuman("Юрий", Sex.Man, 2022);
+        genTreeService.addHuman("Инна", Sex.Woman, 1999);
+        // bigFamily.printGenTree();
+        for (Human human : bigFamily) {
+            System.out.println(human);
         }
-        System.out.println();
+        System.out.println("-------");
+        
+        genTreeService.sortByAge();
+        System.out.println("Сортировка по году рождения");
+        for (Human human : bigFamily) {
+            System.out.println(human);
+        }
+        System.out.println("-------");
 
-        studyGroupService.sortByName();
-        for (Student student: group){
-            System.out.println(student);
+        genTreeService.sortByName(bigFamily);
+        System.out.println("Сортировка по имени");
+        for (Human human : bigFamily) {
+            System.out.println(human);
         }
 
-        System.out.println();
+        // поиск по имени
 
-        studyGroupService.sortById();
-        for (Student student: group){
-            System.out.println(student);
+        // Scanner iScanner = new Scanner(System.in, "Cp866");
+        // searchChild(iScanner, bigFamily);
+        // iScanner.close();
+        
+        // сериализация и десериализация
+
+        // fileHandler.save(bigFamily);
+        // fileHandler.read();
+    }
+
+    public static void searchChild(Scanner iScanner, GenealogicalTree bigFamily) {
+        System.out.println("-------");
+        System.out.print("Введите имя для поиска: ");
+        String searchName = iScanner.next();
+        if (bigFamily.searchPeople(searchName) == null) {
+            System.out.println("Совпадений не найдено");
+        } else {
+            System.out.printf("Результат поиска: %s найден\n", bigFamily.searchPeople(searchName).getName());
+            bigFamily.searchPeople(searchName).getChildren();
         }
+        System.out.println("-------");
     }
 }
